@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="logo.png" />
+    <title>Latest YouTube Upload</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            background: url('background.png') repeat;
+            background-color: #4d8759;
+        }
+
+
+
+        h1 {
+            color: #fff;
+
+            background: #000000cc;
+            border-radius: 10px;
+            width: fit-content;
+            margin: 0 auto;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        .youtuber-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            max-width: 1200px;
+            margin: 0.5rem auto;
+        }
+
+        @media (min-width: 700px) {
+            .youtuber-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1000px) {
+            .youtuber-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .youtuber-card {
+            background: #000000cc;
+            box-sizing: border-box;
+            border-radius: 10px;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .youtuber-card h3 {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .youtuber-card>.video {
+            color: white;
+        }
+
+        .youtuber-card iframe {
+            width: 100%;
+            aspect-ratio: 16/9;
+            min-height: 150px;
+            border-radius: 6px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Latest Uploads from Past Life YouTubers</h1>
+    <div class="youtuber-grid" id="youtuber-grid"></div>
+    <script>
+        const youtubers = [
+            { name: "Bigbst4tz2", channelId: "UC_msGd9XFp8kggtOQu6uARg" },
+            { name: "GoodTimesWithScar", channelId: "UCodkNmk9oWRTIYZdr_HuSlg" },
+            { name: "ImpulseSV", channelId: "UCuMJPFqazQI4SofSFEd-5zA" },
+            { name: "PearlescentMoon", channelId: "UC1GJ5aeqpEWklMBQ3oXrPQQ" },
+            { name: "ZombieCleo", channelId: "UCjI5qxhtyv3srhWr60HemRw" },
+            { name: "EthosLab", channelId: "UCFKDEp9si4RmHFWJW1vYsMA" },
+            { name: "GeminiTay", channelId: "UCUBsjvdHcwZd3ztdY1Zadcw" },
+            { name: "Grian", channelId: "UCR9Gcq0CMm6YgTzsDxAxjOQ" },
+            { name: "InTheLittleWood", channelId: "UCTSu4x8ahsJ16T9fWiwlKdg" },
+            { name: "Rendog", channelId: "UCDpdtiUfcdUCzokpRWORRqA" },
+            { name: "Skizzleman", channelId: "UCYdXHOv7srjm-ZsNsTcwbBw" },
+            { name: "Smajor1995", channelId: "UCxucf8O8itcmkqu3d7yUavg" },
+            { name: "SmallishBeans", channelId: "UC4qdHN4zHhd4VvNy3zNgXPA" },
+            { name: "TangoTek", channelId: "UC4YUKOBld2PoOLzk0YZ80lw" },
+            { name: "BdoubleO100", channelId: "UClu2e7S8atp6tG2galK9hgg" },
+            { name: "Solidarity", channelId: "UC6XAct-Bus4x3mYz3VC_HUw" }
+        ];
+
+        const grid = document.getElementById('youtuber-grid');
+        youtubers.forEach((yt, i) => {
+            const card = document.createElement('div');
+            card.className = 'youtuber-card';
+            card.innerHTML = `<h3>${yt.name}</h3><div class="video" id="video-${i}">Loading...</div>`;
+            grid.appendChild(card);
+        });
+
+        async function fetchWithDelay() {
+            for (let i = 0; i < youtubers.length; i++) {
+                const yt = youtubers[i];
+                const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${yt.channelId}`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+                try {
+                    const res = await fetch(proxyUrl);
+                    const data = await res.json();
+                    const parser = new DOMParser();
+                    const xml = parser.parseFromString(data.contents, "text/xml");
+                    const latest = xml.querySelector("entry > yt\\:videoId, entry > videoId");
+                    if (!latest) throw new Error("No video found");
+                    const videoId = latest.textContent;
+                    document.getElementById(`video-${i}`).innerHTML = `
+                        <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+                    `;
+                } catch (err) {
+                    console.error(`Failed to load video for ${yt.name}`, err);
+                    document.getElementById(`video-${i}`).textContent = "Please refresh the page.";
+                }
+                // Delay 400ms between fetches
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        }
+        fetchWithDelay();
+    </script>
+</body>
+
+</html>
