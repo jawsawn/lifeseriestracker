@@ -46,6 +46,7 @@
             margin: 0 auto;
             margin-top: 0.5rem;
             padding: 0.5rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1.5px 4px rgba(0, 0, 0, 0.18);
         }
 
         .youtuber-grid {
@@ -76,7 +77,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1.5px 4px rgba(0, 0, 0, 0.18);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .youtuber-card.new {
+            background: #2ecc40cc !important;
         }
 
         .youtuber-card h3 {
@@ -130,31 +136,62 @@
             grid.appendChild(card);
         });
 
-        async function fetchWithDelay() {
-            for (let i = 0; i < youtubers.length; i++) {
-                const yt = youtubers[i];
-                const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${yt.channelId}`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+        async function fetchVideo(i, yt) {
+            const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${yt.channelId}`;
+            const proxies = [
+                url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+            ];
+            let success = false;
+            for (const proxy of proxies) {
                 try {
-                    const res = await fetch(proxyUrl);
-                    const data = await res.json();
+                    const res = await fetch(proxy(rssUrl));
+                    let data;
+                    if (proxy === proxies[0]) {
+                        data = await res.json();
+                        if (!data.contents) throw new Error("No contents from AllOrigins");
+                    } else {
+                        data = { contents: await res.text() };
+                    }
                     const parser = new DOMParser();
                     const xml = parser.parseFromString(data.contents, "text/xml");
                     const latest = xml.querySelector("entry > yt\\:videoId, entry > videoId");
+                    const published = xml.querySelector("entry > published");
                     if (!latest) throw new Error("No video found");
                     const videoId = latest.textContent;
+                    let isNew = false;
+                    if (published) {
+                        const publishedDate = new Date(published.textContent);
+                        const now = new Date();
+                        const diffMs = now - publishedDate;
+                        //24 hours
+                        if (diffMs < 24 * 60 * 60 * 1000) {
+                            isNew = true;
+                        }
+                    }
                     document.getElementById(`video-${i}`).innerHTML = `
-                        <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+                        <iframe src=\"https://www.youtube.com/embed/${videoId}\" frameborder=\"0\" allowfullscreen></iframe>
                     `;
+                    const card = document.getElementById(`video-${i}`).parentElement;
+                    if (isNew) {
+                        card.classList.add('new');
+                    } else {
+                        card.classList.remove('new');
+                    }
+                    success = true;
+                    break;
                 } catch (err) {
-                    console.error(`Failed to load video for ${yt.name}`, err);
-                    document.getElementById(`video-${i}`).textContent = "Please refresh the page.";
+                    console.error(`Proxy failed for ${yt.name}:`, err);
                 }
-                // Delay 400ms between fetches
-                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+            if (!success) {
+                document.getElementById(`video-${i}`).textContent = "Failed to load video. Please try again later.";
             }
         }
-        fetchWithDelay();
+
+        (async () => {
+            await Promise.all(youtubers.map((yt, i) => fetchVideo(i, yt)));
+        })();
     </script>
 </body>
 
