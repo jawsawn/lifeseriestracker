@@ -4,22 +4,26 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="See the latest uploads from Final Life & Life Series YouTubers in a single grid." />
-    <meta name="keywords" content="YouTube, Life Series, Final Life, Past Life, Hermitcraft, Minecraft, Latest Uploads, Videos, Tracker" />
+    <meta name="description" content="Watch the latest Final Life (Season 8) episodes from all 15 Minecraft Life Series creators in a single spoiler-free grid, with optional Factions grouping." />
+    <meta name="keywords" content="YouTube, Life Series, Final Life, Hermitcraft, Minecraft, Latest Uploads, Videos, Tracker" />
     <meta name="author" content="jawsawn" />
-    <meta property="og:title" content="Life Series Video Tracker" />
-    <meta property="og:description" content="See the latest uploads from Life Series YouTubers in a single grid." />
-    <meta property="og:image" content="https://jawsawn.github.io/lifeseriestracker/logo.png" />
+    <meta name="theme-color" content="#c0392b" />
+
+    <meta property="og:site_name" content="Final Life • Life Series Community Tracker" />
+    <meta property="og:title" content="Final Life — Latest YouTube Uploads" />
+    <meta property="og:description" content="Watch the latest Final Life (Season 8) episodes from all 15 Minecraft Life Series creators in a single spoiler-free grid, with optional Factions grouping." />
+    <meta property="og:image" content="https://jawsawn.github.io/lifeseriestracker/logo.png?v=finallife" />
+    <meta property="og:image:alt" content="Final Life Logo" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://jawsawn.github.io/lifeseriestracker/" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Life Series Tracker" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Final Life — Latest YouTube Uploads" />
     <meta name="twitter:description"
-        content="See the latest uploads from Life Series YouTubers in a single, easy-to-view grid." />
-    <meta name="twitter:image" content="https://jawsawn.github.io/lifeseriestracker/logo.png" />
-    <link rel="icon" type="image/x-icon" href="https://jawsawn.github.io/lifeseriestracker/logo.png" />
-    <title>Final Life - Latest YouTube Uploads</title>
+        content="Watch the latest Final Life (Season 8) episodes from all 15 Minecraft Life Series creators in a single spoiler-free grid, with optional Factions grouping." />
+    <meta name="twitter:image" content="https://jawsawn.github.io/lifeseriestracker/logo.png?v=finallife" />
+    <link rel="icon" type="image/png" href="logo.png?v=finallife" />
+    <title>Final Life — Latest YouTube Uploads</title>
     <style>
         :root {
             --bg-overlay: rgba(14, 22, 17, 0.92);
@@ -80,6 +84,13 @@
             align-items: center;
             gap: 0.45rem;
             min-width: 0;
+        }
+
+        .brand-logo {
+            height: 24px;
+            width: auto;
+            display: block;
+            flex-shrink: 0;
         }
 
         .brand-title {
@@ -570,6 +581,7 @@
     <div class="page-container" id="page-container">
         <header class="site-header">
             <div class="brand">
+                <img class="brand-logo" src="logo.png" alt="Final Life" />
                 <h1 class="brand-title">Life Series Tracker</h1>
                 <span class="season-badge">Final Life</span>
                 <div class="status-pill" id="upload-summary">
