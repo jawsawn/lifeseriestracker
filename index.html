@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="See the latest uploads from Life Series YouTubers in a single grid." />
-    <meta name="keywords" content="YouTube, Life Series, Hermitcraft, Minecraft, Latest Uploads, Videos, Tracker" />
+    <meta name="description" content="See the latest uploads from Final Life & Life Series YouTubers in a single grid." />
+    <meta name="keywords" content="YouTube, Life Series, Final Life, Past Life, Hermitcraft, Minecraft, Latest Uploads, Videos, Tracker" />
     <meta name="author" content="jawsawn" />
     <meta property="og:title" content="Life Series Video Tracker" />
     <meta property="og:description" content="See the latest uploads from Life Series YouTubers in a single grid." />
@@ -19,172 +19,787 @@
         content="See the latest uploads from Life Series YouTubers in a single, easy-to-view grid." />
     <meta name="twitter:image" content="https://jawsawn.github.io/lifeseriestracker/logo.png" />
     <link rel="icon" type="image/x-icon" href="https://jawsawn.github.io/lifeseriestracker/logo.png" />
-    <title>Latest YouTube Upload</title>
+    <title>Final Life - Latest YouTube Uploads</title>
     <style>
+        :root {
+            --bg-overlay: rgba(14, 22, 17, 0.86);
+            --card-bg: rgba(14, 19, 16, 0.88);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --card-hover-border: rgba(255, 255, 255, 0.28);
+            --new-accent: #2ecc71;
+            --new-bg: rgba(20, 72, 40, 0.9);
+            --new-border: rgba(46, 204, 113, 0.78);
+            --text-primary: #f5f7f6;
+            --text-secondary: #b4c2b9;
+            --radius-md: 8px;
+            --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.35);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            text-align: center;
-            background: url('background.png') repeat;
-            background-color: #4d8759;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-primary);
+            background-color: #3f784c;
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.45)),
+                url('background.png');
+            background-repeat: no-repeat, repeat;
+            background-size: cover, 64px 64px;
+            background-attachment: fixed;
+            min-height: 100dvh;
+            padding: 0.35rem;
+            line-height: 1.25;
         }
 
-
-
-        h1 {
-            color: #fff;
-
-            background: #000000cc;
-            border-radius: 10px;
-            width: fit-content;
+        .page-container {
+            width: 100%;
             margin: 0 auto;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1.5px 4px rgba(0, 0, 0, 0.18);
         }
 
+        /* Compact Single-Bar Header */
+        .site-header {
+            background: var(--bg-overlay);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 0.4rem 0.65rem;
+            margin-bottom: 0.4rem;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.4rem 0.75rem;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            min-width: 0;
+        }
+
+        .brand-title {
+            font-size: clamp(0.88rem, 2.2vw, 1.15rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .season-badge {
+            background: linear-gradient(135deg, #c0392b, #8e1b10);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.15rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            flex-shrink: 0;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        /* Spoiler Checkbox Toggle */
+        .spoiler-toggle-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .spoiler-toggle-label:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.28);
+        }
+
+        .spoiler-toggle-label input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.75rem;
+            height: 0.95rem;
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .spoiler-toggle-label input[type="checkbox"]::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: calc(0.95rem - 4px);
+            height: calc(0.95rem - 4px);
+            background: #ffffff;
+            border-radius: 50%;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .spoiler-toggle-label input[type="checkbox"]:checked {
+            background: #e74c3c;
+        }
+
+        .spoiler-toggle-label input[type="checkbox"]:checked::after {
+            transform: translateX(0.8rem);
+        }
+
+        .spoiler-tag {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.08rem 0.35rem;
+            border-radius: 999px;
+            background: rgba(231, 76, 60, 0.24);
+            color: #ff9487;
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            font-weight: 700;
+        }
+
+        .status-pill {
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--new-accent);
+            box-shadow: 0 0 6px var(--new-accent);
+            display: inline-block;
+        }
+
+        .wiki-link {
+            font-size: 0.74rem;
+            color: #9cd6ff;
+            text-decoration: none;
+            padding: 0.22rem 0.55rem;
+            border-radius: 999px;
+            background: rgba(156, 214, 255, 0.1);
+            border: 1px solid rgba(156, 214, 255, 0.22);
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+        .wiki-link:hover {
+            background: rgba(156, 214, 255, 0.22);
+            color: #ffffff;
+        }
+
+        /* Dense Mobile-First Grid (2 columns on phones, scaling up to 5x3 on desktop) */
         .youtuber-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
-            max-width: 1200px;
-            margin: 0.5rem auto;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem;
         }
 
-        @media (min-width: 700px) {
+        @media (min-width: 540px) {
             .youtuber-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0.45rem;
             }
         }
 
-        @media (min-width: 1000px) {
+        @media (min-width: 780px) {
             .youtuber-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(4, minmax(0, 1fr));
             }
         }
 
-        .youtuber-card {
-            background: #000000cc;
-            box-sizing: border-box;
-            border-radius: 10px;
-            padding: 0.5rem;
+        /* Desktop: Fit all 15 cards (5 columns x 3 rows) cleanly inside 100dvh */
+        @media (min-width: 1024px) {
+            body {
+                padding: 0.45rem 0.75rem;
+                overflow-x: hidden;
+            }
+
+            /* Constrain width by viewport height so 3 rows of 16:9 cards never overflow 100dvh */
+            .page-container {
+                max-width: min(98vw, calc(((100dvh - 54px) / 3 - 30px) * (16 / 9) * 5 + 36px));
+            }
+
+            .page-container.factions-mode {
+                max-width: min(98vw, calc(((100dvh - 54px) / 3 - 52px) * (16 / 9) * 6 + 60px));
+            }
+
+            .youtuber-grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 0.5rem;
+            }
+        }
+
+        /* Factions / Teams Container (Spoiler View) */
+        .factions-container {
+            display: none;
+            grid-template-columns: 1fr;
+            gap: 0.45rem;
+        }
+
+        .factions-container.active {
+            display: grid;
+        }
+
+        .youtuber-grid.hidden {
+            display: none;
+        }
+
+        .faction-section {
+            background: rgba(10, 16, 12, 0.78);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-top: 3px solid var(--faction-color, #2ecc71);
+            border-radius: var(--radius-md);
+            padding: 0.4rem;
+            box-shadow: var(--shadow-card);
             display: flex;
             flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+        }
+
+        .faction-header {
+            display: flex;
             align-items: center;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 1.5px 4px rgba(0, 0, 0, 0.18);
-            transition: background 0.3s, box-shadow 0.3s;
+            justify-content: space-between;
+            gap: 0.4rem;
+            padding: 0 0.15rem;
+        }
+
+        .faction-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            min-width: 0;
+        }
+
+        .faction-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--faction-color, #2ecc71);
+            box-shadow: 0 0 8px var(--faction-color, #2ecc71);
+            flex-shrink: 0;
+        }
+
+        .faction-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .faction-count {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 0.1rem 0.4rem;
+            border-radius: 999px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Faction internal grid on mobile: dense 2-col */
+        .faction-section .youtuber-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem;
+        }
+
+        @media (min-width: 640px) {
+            .faction-section .youtuber-grid {
+                grid-template-columns: repeat(var(--faction-cols, 3), minmax(0, 1fr));
+            }
+        }
+
+        /* Desktop Factions Bento Grid: 6-col layout across 3 compact rows so all 5 factions fit on 1 screen */
+        @media (min-width: 1024px) {
+            .factions-container {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                gap: 0.45rem;
+            }
+
+            .faction-section[data-cols="4"] {
+                grid-column: span 4;
+            }
+
+            .faction-section[data-cols="3"] {
+                grid-column: span 3;
+            }
+
+            .faction-section[data-cols="2"] {
+                grid-column: span 2;
+            }
+        }
+
+        /* Individual YouTuber Card (Compact & High-Density) */
+        .youtuber-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 0.3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            box-shadow: var(--shadow-card);
+            transition: border-color 0.15s ease, background 0.2s ease;
+            min-width: 0;
+        }
+
+        .youtuber-card:hover {
+            border-color: var(--card-hover-border);
         }
 
         .youtuber-card.new {
-            background: #2ecc40cc !important;
+            background: var(--new-bg);
+            border-color: var(--new-border);
         }
 
-        .youtuber-card h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.25rem;
+            min-width: 0;
         }
 
-        .youtuber-card>.video {
-            color: white;
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            min-width: 0;
+            text-decoration: none;
+            color: inherit;
         }
 
-        .youtuber-card iframe {
+        .creator-info:hover .creator-name {
+            text-decoration: underline;
+        }
+
+        .mc-avatar {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            image-rendering: pixelated;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .creator-name {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .time-badge {
+            font-size: 0.62rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.35);
+            padding: 0.08rem 0.3rem;
+            border-radius: 4px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .new-badge {
+            display: none;
+            font-size: 0.58rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            background: #2ecc71;
+            color: #062310;
+            padding: 0.08rem 0.28rem;
+            border-radius: 4px;
+        }
+
+        .youtuber-card.new .new-badge {
+            display: inline-block;
+        }
+
+        .youtuber-card.new .time-badge {
+            color: #d4f8e2;
+            background: rgba(0, 0, 0, 0.42);
+        }
+
+        /* 16:9 Responsive Video Wrapper */
+        .video-wrapper {
+            position: relative;
             width: 100%;
-            aspect-ratio: 16/9;
-            min-height: 150px;
-            border-radius: 6px;
+            aspect-ratio: 16 / 9;
+            background: #0d120f;
+            border-radius: 4px;
+            overflow: hidden;
+        }
 
+        .video-wrapper iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .loading-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            background: linear-gradient(110deg, #111814 8%, #1c2821 18%, #111814 33%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position-x: -200%;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>Latest Uploads from Past Life YouTubers</h1>
-    <div class="youtuber-grid" id="youtuber-grid"></div>
+    <div class="page-container" id="page-container">
+        <header class="site-header">
+            <div class="brand">
+                <h1 class="brand-title">Life Series Tracker</h1>
+                <span class="season-badge">Final Life</span>
+                <div class="status-pill" id="upload-summary">
+                    <span class="status-dot"></span>
+                    <span id="summary-text">Loading...</span>
+                </div>
+            </div>
+            <div class="header-controls">
+                <label class="spoiler-toggle-label" for="spoiler-toggle">
+                    <input type="checkbox" id="spoiler-toggle" />
+                    <span>Factions / Teams</span>
+                    <span class="spoiler-tag">Spoilers</span>
+                </label>
+                <a class="wiki-link" href="https://the-life-series.fandom.com/wiki/Final_Life#Factions" target="_blank"
+                    rel="noopener noreferrer">
+                    Wiki ↗
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <div class="youtuber-grid" id="youtuber-grid"></div>
+            <div class="factions-container" id="factions-container"></div>
+        </main>
+    </div>
+
     <script>
         const youtubers = [
-            { name: "Bigbst4tz2", channelId: "UC_msGd9XFp8kggtOQu6uARg" },
-            { name: "GoodTimesWithScar", channelId: "UCodkNmk9oWRTIYZdr_HuSlg" },
-            { name: "ImpulseSV", channelId: "UCuMJPFqazQI4SofSFEd-5zA" },
-            { name: "PearlescentMoon", channelId: "UC1GJ5aeqpEWklMBQ3oXrPQQ" },
-            { name: "ZombieCleo", channelId: "UCjI5qxhtyv3srhWr60HemRw" },
-            { name: "EthosLab", channelId: "UCFKDEp9si4RmHFWJW1vYsMA" },
-            { name: "GeminiTay", channelId: "UCUBsjvdHcwZd3ztdY1Zadcw" },
-            { name: "Grian", channelId: "UCR9Gcq0CMm6YgTzsDxAxjOQ" },
-            { name: "InTheLittleWood", channelId: "UCTSu4x8ahsJ16T9fWiwlKdg" },
-            { name: "Rendog", channelId: "UCDpdtiUfcdUCzokpRWORRqA" },
-            { name: "Skizzleman", channelId: "UCYdXHOv7srjm-ZsNsTcwbBw" },
-            { name: "Smajor1995", channelId: "UCxucf8O8itcmkqu3d7yUavg" },
-            { name: "SmallishBeans", channelId: "UC4qdHN4zHhd4VvNy3zNgXPA" },
-            { name: "TangoTek", channelId: "UC4YUKOBld2PoOLzk0YZ80lw" },
-            { name: "BdoubleO100", channelId: "UClu2e7S8atp6tG2galK9hgg" },
-            { name: "Solidarity", channelId: "UC6XAct-Bus4x3mYz3VC_HUw" }
+            { name: "Bigbst4tz2", mcName: "Bigbst4tz2", channelId: "UC_msGd9XFp8kggtOQu6uARg" },
+            { name: "GoodTimesWithScar", mcName: "GoodTimesWithScar", channelId: "UCodkNmk9oWRTIYZdr_HuSlg" },
+            { name: "ImpulseSV", mcName: "impulseSV", channelId: "UCuMJPFqazQI4SofSFEd-5zA" },
+            { name: "PearlescentMoon", mcName: "PearlescentMoon", channelId: "UC1GJ5aeqpEWklMBQ3oXrPQQ" },
+            { name: "ZombieCleo", mcName: "ZombieCleo", channelId: "UCjI5qxhtyv3srhWr60HemRw" },
+            { name: "GeminiTay", mcName: "GeminiTay", channelId: "UCUBsjvdHcwZd3ztdY1Zadcw" },
+            { name: "Grian", mcName: "Grian", channelId: "UCR9Gcq0CMm6YgTzsDxAxjOQ" },
+            { name: "InTheLittleWood", mcName: "InTheLittleWood", channelId: "UCTSu4x8ahsJ16T9fWiwlKdg" },
+            { name: "Rendog", mcName: "Renthedog", channelId: "UCDpdtiUfcdUCzokpRWORRqA" },
+            { name: "Skizzleman", mcName: "Skizzleman", channelId: "UCYdXHOv7srjm-ZsNsTcwbBw" },
+            { name: "Smajor1995", mcName: "Smajor1995", channelId: "UCxucf8O8itcmkqu3d7yUavg" },
+            { name: "SmallishBeans", mcName: "SmallishBeans", channelId: "UC4qdHN4zHhd4VvNy3zNgXPA" },
+            { name: "BdoubleO100", mcName: "BdoubleO100", channelId: "UClu2e7S8atp6tG2galK9hgg" },
+            { name: "Solidarity", mcName: "SolidarityGaming", channelId: "UC6XAct-Bus4x3mYz3VC_HUw" },
+            { name: "MumboJumbo", mcName: "Mumbo", channelId: "UChFur_NwVSbUozOcF_F2kMg" }
         ];
 
+        // Ordered so desktop 6-col Bento fits in 3 rows: (4+2), (3+3), (3)
+        const factions = [
+            {
+                name: "Bicep Boys",
+                color: "#e67e22",
+                members: ["BdoubleO100", "Bigbst4tz2", "SmallishBeans", "Solidarity"]
+            },
+            {
+                name: "Team Aura",
+                color: "#1abc9c",
+                members: ["GeminiTay", "Smajor1995"]
+            },
+            {
+                name: '"Chill" Guys',
+                color: "#3498db",
+                members: ["GoodTimesWithScar", "Grian", "MumboJumbo"]
+            },
+            {
+                name: "Horse Girls",
+                color: "#9b59b6",
+                members: ["InTheLittleWood", "PearlescentMoon", "ZombieCleo"]
+            },
+            {
+                name: "Unaligned",
+                color: "#95a5a6",
+                members: ["ImpulseSV", "Rendog", "Skizzleman"]
+            }
+        ];
+
+        const pageContainer = document.getElementById('page-container');
         const grid = document.getElementById('youtuber-grid');
+        const factionsContainer = document.getElementById('factions-container');
+        const spoilerToggle = document.getElementById('spoiler-toggle');
+        const summaryText = document.getElementById('summary-text');
+
+        const cardsByName = new Map();
+        const factionGrids = new Map();
+        let newUploadsCount = 0;
+        let loadedCount = 0;
+
+        // Build member cards once so iframes never reload when toggling layout
         youtubers.forEach((yt, i) => {
             const card = document.createElement('div');
             card.className = 'youtuber-card';
-            card.innerHTML = `<h3>${yt.name}</h3><div class="video" id="video-${i}">Loading...</div>`;
+            card.dataset.member = yt.name;
+            card.innerHTML = `
+                <div class="card-header">
+                    <a class="creator-info" href="https://www.youtube.com/channel/${yt.channelId}" target="_blank" rel="noopener noreferrer" title="Visit ${yt.name}'s YouTube Channel">
+                        <img class="mc-avatar" src="https://mc-heads.net/avatar/${yt.mcName}/24" alt="" loading="lazy" onerror="this.style.display='none'" />
+                        <h3 class="creator-name">${yt.name}</h3>
+                    </a>
+                    <div class="card-badges">
+                        <span class="new-badge">New</span>
+                        <span class="time-badge" id="time-${i}"></span>
+                    </div>
+                </div>
+                <div class="video-wrapper" id="video-${i}">
+                    <div class="loading-state">Loading...</div>
+                </div>
+            `;
+            cardsByName.set(yt.name, card);
             grid.appendChild(card);
         });
 
+        // Build faction sections
+        factions.forEach(faction => {
+            const section = document.createElement('section');
+            section.className = 'faction-section';
+            section.dataset.cols = faction.members.length;
+            section.style.setProperty('--faction-color', faction.color);
+            section.style.setProperty('--faction-cols', faction.members.length);
+
+            section.innerHTML = `
+                <div class="faction-header">
+                    <div class="faction-title-group">
+                        <span class="faction-dot"></span>
+                        <h2 class="faction-title">${faction.name}</h2>
+                    </div>
+                    <span class="faction-count">${faction.members.length}</span>
+                </div>
+                <div class="youtuber-grid"></div>
+            `;
+            const factionGrid = section.querySelector('.youtuber-grid');
+            factionGrids.set(faction.name, factionGrid);
+            factionsContainer.appendChild(section);
+        });
+
+        function applyLayout(showFactions) {
+            if (showFactions) {
+                factions.forEach(faction => {
+                    const targetGrid = factionGrids.get(faction.name);
+                    faction.members.forEach(memberName => {
+                        const card = cardsByName.get(memberName);
+                        if (card && targetGrid) {
+                            targetGrid.appendChild(card);
+                        }
+                    });
+                });
+                grid.classList.add('hidden');
+                factionsContainer.classList.add('active');
+                pageContainer.classList.add('factions-mode');
+            } else {
+                youtubers.forEach(yt => {
+                    const card = cardsByName.get(yt.name);
+                    if (card) {
+                        grid.appendChild(card);
+                    }
+                });
+                factionsContainer.classList.remove('active');
+                grid.classList.remove('hidden');
+                pageContainer.classList.remove('factions-mode');
+            }
+        }
+
+        spoilerToggle.addEventListener('change', (e) => {
+            applyLayout(e.target.checked);
+        });
+
+        function formatRelativeTime(date) {
+            if (!date || isNaN(date)) return "";
+            const diffSeconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+            if (diffSeconds < 60) return "now";
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            if (diffMinutes < 60) return `${diffMinutes}m`;
+            const diffHours = Math.floor(diffMinutes / 60);
+            if (diffHours < 24) return `${diffHours}h`;
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 30) return `${diffDays}d`;
+            const diffMonths = Math.floor(diffDays / 30);
+            return `${diffMonths}mo`;
+        }
+
+        function updateSummary() {
+            if (loadedCount < youtubers.length) {
+                summaryText.textContent = `${loadedCount}/${youtubers.length}`;
+            } else if (newUploadsCount > 0) {
+                summaryText.textContent = `${newUploadsCount} new (24h)`;
+            } else {
+                summaryText.textContent = `${youtubers.length} loaded`;
+            }
+        }
+
+        async function fetchWithTimeout(url, timeoutMs = 8000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                return await fetch(url, { signal: controller.signal });
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function parseXmlFeed(xmlText) {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xmlText, "text/xml");
+            const latest = xml.querySelector("entry > yt\\:videoId, entry > videoId");
+            const published = xml.querySelector("entry > published");
+            if (!latest) throw new Error("No video found in XML");
+            return {
+                videoId: latest.textContent.trim(),
+                publishedDate: published ? new Date(published.textContent.trim()) : null
+            };
+        }
+
         async function fetchVideo(i, yt) {
             const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${yt.channelId}`;
-            const proxies = [
-                url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-                url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-            ];
-            let success = false;
-            for (const proxy of proxies) {
-                try {
-                    const res = await fetch(proxy(rssUrl));
-                    let data;
-                    if (proxy === proxies[0]) {
-                        data = await res.json();
-                        if (!data.contents) throw new Error("No contents from AllOrigins");
-                    } else {
-                        data = { contents: await res.text() };
+            const fetchers = [
+                async () => {
+                    const res = await fetchWithTimeout(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+                    if (!res.ok) throw new Error(`rss2json HTTP ${res.status}`);
+                    const data = await res.json();
+                    if (data.status !== "ok" || !data.items || !data.items.length) {
+                        throw new Error("No items from rss2json");
                     }
-                    const parser = new DOMParser();
-                    const xml = parser.parseFromString(data.contents, "text/xml");
-                    const latest = xml.querySelector("entry > yt\\:videoId, entry > videoId");
-                    const published = xml.querySelector("entry > published");
-                    if (!latest) throw new Error("No video found");
-                    const videoId = latest.textContent;
+                    const item = data.items[0];
+                    const videoId = item.guid
+                        ? item.guid.split(':').pop()
+                        : new URL(item.link).searchParams.get('v');
+                    if (!videoId) throw new Error("No videoId in rss2json item");
+                    const pubStr = item.pubDate
+                        ? (item.pubDate.includes('T') ? item.pubDate : item.pubDate.replace(' ', 'T') + 'Z')
+                        : null;
+                    return {
+                        videoId,
+                        publishedDate: pubStr ? new Date(pubStr) : null
+                    };
+                },
+                async () => {
+                    const res = await fetchWithTimeout(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`);
+                    if (!res.ok) throw new Error(`allorigins HTTP ${res.status}`);
+                    const data = await res.json();
+                    if (!data.contents) throw new Error("No contents from AllOrigins");
+                    return parseXmlFeed(data.contents);
+                },
+                async () => {
+                    const res = await fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(rssUrl)}`);
+                    if (!res.ok) throw new Error(`codetabs HTTP ${res.status}`);
+                    const text = await res.text();
+                    return parseXmlFeed(text);
+                }
+            ];
+
+            let success = false;
+            const card = cardsByName.get(yt.name);
+            for (const fetcher of fetchers) {
+                try {
+                    const { videoId, publishedDate } = await fetcher();
                     let isNew = false;
-                    if (published) {
-                        const publishedDate = new Date(published.textContent);
+                    if (publishedDate && !isNaN(publishedDate)) {
                         const now = new Date();
                         const diffMs = now - publishedDate;
-                        //24 hours
                         if (diffMs < 24 * 60 * 60 * 1000) {
                             isNew = true;
                         }
+                        const timeEl = document.getElementById(`time-${i}`);
+                        if (timeEl) {
+                            timeEl.textContent = formatRelativeTime(publishedDate);
+                            timeEl.title = publishedDate.toLocaleString();
+                        }
                     }
                     document.getElementById(`video-${i}`).innerHTML = `
-                        <iframe src=\"https://www.youtube.com/embed/${videoId}\" frameborder=\"0\" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/${videoId}" loading="lazy" allowfullscreen></iframe>
                     `;
-                    const card = document.getElementById(`video-${i}`).parentElement;
                     if (isNew) {
                         card.classList.add('new');
+                        newUploadsCount++;
                     } else {
                         card.classList.remove('new');
                     }
                     success = true;
                     break;
                 } catch (err) {
-                    console.error(`Proxy failed for ${yt.name}:`, err);
+                    console.error(`Fetcher failed for ${yt.name}:`, err);
                 }
             }
             if (!success) {
-                document.getElementById(`video-${i}`).textContent = "Failed to load video. Please try again later.";
+                const uploadsPlaylistId = yt.channelId.replace(/^UC/, 'UU');
+                document.getElementById(`video-${i}`).innerHTML = `
+                    <iframe src="https://www.youtube.com/embed/videoseries?list=${uploadsPlaylistId}" loading="lazy" allowfullscreen></iframe>
+                `;
             }
+            loadedCount++;
+            updateSummary();
         }
 
         (async () => {
